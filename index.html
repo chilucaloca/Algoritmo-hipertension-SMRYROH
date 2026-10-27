@@ -1,508 +1,346 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algoritmo Clínico Odontológico - HTA | Creado por chiluca</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-        .flow-card { transition: all 0.3s ease; }
-        .flow-active { transform: scale(1.03); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); border-width: 3px; }
-        .flow-inactive { opacity: 0.45; filter: grayscale(40%); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritmo Clínico Odontológico en HTA | Creado por chiluca</title>
+<meta name="description" content="Simulador interactivo educativo de conducta odontológica en hipertensión arterial (adultos y pediatría).">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Algoritmo de Conducta Odontológica en HTA">
+<meta property="og:description" content="Simulador interactivo de toma de decisiones clínicas para odontología.">
+<meta name="theme-color" content="#1e3a8a">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+.flow-card{transition:all .3s ease}
+.flow-active{transform:scale(1.03);box-shadow:0 10px 25px -5px rgba(0,0,0,.25);border-width:3px}
+.flow-inactive{opacity:.6}
+#cardResultado{transition:background-color .35s ease,border-color .35s ease}
+summary{cursor:pointer}
+@media print{.no-print{display:none!important}body{background:#fff}}
+</style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col justify-between">
+<div>
+<header class="bg-blue-900 text-white shadow-lg no-print">
+<div class="max-w-6xl mx-auto px-4 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<i class="fa-solid fa-tooth text-3xl text-blue-300" aria-hidden="true"></i>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h1 class="text-xl md:text-2xl font-bold tracking-tight">Algoritmo de Conducta Odontológica en HTA</h1>
+<span class="bg-blue-700/80 border border-blue-400/40 text-blue-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">Creado por chiluca</span>
+</div>
+<p class="text-sm text-blue-100 mt-0.5">Simulador interactivo de toma de decisiones clínicas (adultos y pediatría)</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 justify-center">
+<button onclick="cargarCaso1()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-sm font-semibold px-3 py-2 rounded-lg shadow transition"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Caso 1: mujer 50 a, urgencia</button>
+<button onclick="cargarCaso2()" class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-3 py-2 rounded-lg shadow transition"><i class="fa-solid fa-child" aria-hidden="true"></i> Caso 2: niño 8 a, focos infecciosos</button>
+<button onclick="resetear()" class="bg-slate-700 hover:bg-slate-600 text-white text-sm px-3 py-2 rounded-lg shadow transition"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i> Reiniciar</button>
+</div>
+</div>
+</header>
 
-    <div>
-        <!-- Header -->
-        <header class="bg-blue-900 text-white shadow-lg">
-            <div class="max-w-6xl mx-auto px-4 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-tooth text-3xl text-blue-300"></i>
-                    <div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h1 class="text-xl md:text-2xl font-bold tracking-tight">Algoritmo de Conducta Odontológica en HTA</h1>
-                            <span class="bg-blue-700/80 border border-blue-400/40 text-blue-100 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                                Creado por chiluca
-                            </span>
-                        </div>
-                        <p class="text-xs md:text-sm text-blue-200 mt-0.5">Simulador Interactivo de Toma de Decisiones Clínicas (Adultos y Pediatría)</p>
-                    </div>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="cargarCaso1()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs md:text-sm font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-bolt"></i> Caso 1: Mujer 50a (150/85 • Urgencia)
-                    </button>
-                    <button onclick="cargarCaso2()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs md:text-sm font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-2">
-                        <i class="fa-solid fa-child"></i> Caso 2: Niño 8a (129/86 • Focos Infecciosos)
-                    </button>
-                    <button onclick="resetear()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs md:text-sm px-3 py-2 rounded-lg shadow transition">
-                        <i class="fa-solid fa-rotate-right"></i> Reiniciar
-                    </button>
-                </div>
-            </div>
-        </header>
+<div role="note" class="bg-amber-50 border-b border-amber-300 text-amber-900 text-sm px-4 py-2 text-center">
+<i class="fa-solid fa-circle-info" aria-hidden="true"></i> Herramienta <strong>educativa</strong>. No reemplaza el juicio clínico ni la valoración médica del paciente.
+</div>
 
-        <main class="max-w-6xl mx-auto px-4 mt-6 mb-10 grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- Panel de Control / Inputs -->
-            <section class="lg:col-span-5 bg-white rounded-2xl shadow-md p-6 border border-slate-200 h-fit">
-                <h2 class="text-lg font-bold text-slate-800 border-b pb-3 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-blue-600"></i> 1. Datos Clínicos del Paciente
-                </h2>
+<main class="max-w-6xl mx-auto px-4 mt-6 mb-10 grid grid-cols-1 lg:grid-cols-12 gap-6">
+<section class="lg:col-span-5 bg-white rounded-2xl shadow-md p-6 border border-slate-200 h-fit no-print" aria-labelledby="h-datos">
+<h2 id="h-datos" class="text-lg font-bold border-b pb-3 mb-4 flex items-center gap-2"><i class="fa-solid fa-sliders text-blue-600" aria-hidden="true"></i> 1. Datos clínicos del paciente</h2>
+<div id="notaCaso" class="hidden mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200 text-sm text-blue-900"></div>
 
-                <!-- Nota de caso precargado -->
-                <div id="notaCaso" class="hidden mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-900"></div>
+<div class="mb-5">
+<div class="flex justify-between items-center mb-1">
+<label for="edad" class="font-semibold text-sm">Edad del paciente</label>
+<span id="edadVal" class="text-blue-800 font-bold bg-blue-50 px-2.5 py-0.5 rounded-full text-sm">35 años (Adulto)</span>
+</div>
+<input type="range" id="edad" min="3" max="90" value="35" oninput="evaluarAlgoritmo()" class="w-full h-6 accent-blue-600 cursor-pointer">
+<div class="flex justify-between text-xs text-slate-600"><span>3 años (pediátrico)</span><span>18 años</span><span>90 años</span></div>
+</div>
 
-                <!-- Edad -->
-                <div class="mb-5">
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="font-semibold text-sm text-slate-700">Edad del Paciente</label>
-                        <span id="edadVal" class="text-blue-700 font-bold bg-blue-50 px-2.5 py-0.5 rounded-full text-sm">35 años (Adulto)</span>
-                    </div>
-                    <input type="range" id="edad" min="3" max="90" value="35" oninput="evaluarAlgoritmo()" class="w-full accent-blue-600 cursor-pointer">
-                    <div class="flex justify-between text-[11px] text-slate-400">
-                        <span>3 años (Pediátrico)</span>
-                        <span>18 años</span>
-                        <span>90 años</span>
-                    </div>
-                </div>
+<div class="mb-5">
+<div class="flex justify-between items-center mb-1">
+<label for="sistolica" class="font-semibold text-sm">Presión sistólica (mmHg)</label>
+<div class="flex items-center gap-1">
+<input type="number" id="sisNum" value="118" min="80" max="220" aria-label="Presión sistólica, valor numérico" onchange="syncSliders('sis')" class="w-16 text-center font-bold border rounded px-1 py-0.5 text-sm">
+<span class="text-xs text-slate-600">mmHg</span>
+</div>
+</div>
+<input type="range" id="sistolica" min="80" max="220" value="118" oninput="syncInputs('sis')" class="w-full h-6 accent-rose-600 cursor-pointer">
+</div>
 
-                <!-- Presión Sistólica -->
-                <div class="mb-5">
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="font-semibold text-sm text-slate-700">Presión Sistólica (mmHg)</label>
-                        <div class="flex items-center gap-1">
-                            <input type="number" id="sisNum" value="118" min="70" max="240" oninput="syncSliders('sis')" class="w-16 text-center font-bold text-slate-800 border rounded px-1 py-0.5 text-sm">
-                            <span class="text-xs text-slate-500">mmHg</span>
-                        </div>
-                    </div>
-                    <input type="range" id="sistolica" min="80" max="220" value="118" oninput="syncInputs('sis')" class="w-full accent-rose-600 cursor-pointer">
-                </div>
+<div class="mb-5">
+<div class="flex justify-between items-center mb-1">
+<label for="diastolica" class="font-semibold text-sm">Presión diastólica (mmHg)</label>
+<div class="flex items-center gap-1">
+<input type="number" id="diasNum" value="76" min="50" max="140" aria-label="Presión diastólica, valor numérico" onchange="syncSliders('dias')" class="w-16 text-center font-bold border rounded px-1 py-0.5 text-sm">
+<span class="text-xs text-slate-600">mmHg</span>
+</div>
+</div>
+<input type="range" id="diastolica" min="50" max="140" value="76" oninput="syncInputs('dias')" class="w-full h-6 accent-rose-600 cursor-pointer">
+</div>
 
-                <!-- Presión Diastólica -->
-                <div class="mb-5">
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="font-semibold text-sm text-slate-700">Presión Diastólica (mmHg)</label>
-                        <div class="flex items-center gap-1">
-                            <input type="number" id="diasNum" value="76" min="40" max="150" oninput="syncSliders('dias')" class="w-16 text-center font-bold text-slate-800 border rounded px-1 py-0.5 text-sm">
-                            <span class="text-xs text-slate-500">mmHg</span>
-                        </div>
-                    </div>
-                    <input type="range" id="diastolica" min="50" max="140" value="76" oninput="syncInputs('dias')" class="w-full accent-rose-600 cursor-pointer">
-                </div>
+<fieldset class="mb-5">
+<legend class="font-semibold text-sm mb-2">Tipo de tratamiento / motivo de consulta</legend>
+<div class="grid grid-cols-1 gap-2">
+<label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-slate-50 transition">
+<input type="radio" name="urgencia" value="electivo" checked onchange="evaluarAlgoritmo()" class="accent-blue-600 w-4 h-4">
+<div><div class="font-semibold text-sm">Tratamiento electivo / rutina</div><div class="text-sm text-slate-600">Profilaxis, operatoria sin dolor agudo, rehabilitación, revisión.</div></div>
+</label>
+<label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-slate-50 transition">
+<input type="radio" name="urgencia" value="urgencia" onchange="evaluarAlgoritmo()" class="accent-rose-600 w-4 h-4">
+<div><div class="font-semibold text-sm text-rose-800">Urgencia odontológica (dolor / infección)</div><div class="text-sm text-slate-600">Pulpitis irreversible, dolor severo nocturno, absceso agudo.</div></div>
+</label>
+</div>
+</fieldset>
 
-                <!-- Motivo de Consulta -->
-                <div class="mb-5">
-                    <label class="font-semibold text-sm text-slate-700 block mb-2">Tipo de Tratamiento / Motivo de Consulta</label>
-                    <div class="grid grid-cols-1 gap-2">
-                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-slate-50 transition">
-                            <input type="radio" name="urgencia" value="electivo" checked onchange="evaluarAlgoritmo()" class="accent-blue-600 w-4 h-4">
-                            <div>
-                                <div class="font-semibold text-sm">Tratamiento Electivo / Rutina</div>
-                                <div class="text-xs text-slate-500">Profilaxis, operatoria sin dolor agudo, rehabilitación, revisión.</div>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-slate-50 transition">
-                            <input type="radio" name="urgencia" value="urgencia" onchange="evaluarAlgoritmo()" class="accent-rose-600 w-4 h-4">
-                            <div>
-                                <div class="font-semibold text-sm text-rose-700">Urgencia Odontológica (Dolor / Infección)</div>
-                                <div class="text-xs text-slate-500">Pulpitis irreversible, dolor severo nocturno, absceso agudo.</div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
+<div class="space-y-2 border-t pt-4">
+<label class="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" id="diagPrevio" onchange="evaluarAlgoritmo()" class="accent-blue-600 w-4 h-4 rounded"><span>Paciente ya diagnosticado con hipertensión arterial</span></label>
+<label class="flex items-center gap-2 cursor-pointer text-sm text-rose-900 font-medium"><input type="checkbox" id="sintomasCrisis" onchange="evaluarAlgoritmo()" class="accent-rose-600 w-4 h-4 rounded"><span>Presenta síntomas de alarma (cefalea severa, dolor torácico, disnea, acúfenos)</span></label>
+</div>
+</section>
 
-                <!-- Antecedentes y Síntomas -->
-                <div class="space-y-2 border-t pt-4">
-                    <label class="flex items-center gap-2 cursor-pointer text-sm">
-                        <input type="checkbox" id="diagPrevio" onchange="evaluarAlgoritmo()" class="accent-blue-600 w-4 h-4 rounded">
-                        <span>Paciente ya diagnosticado con Hipertensión Arterial</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer text-sm text-rose-800 font-medium">
-                        <input type="checkbox" id="sintomasCrisis" onchange="evaluarAlgoritmo()" class="accent-rose-600 w-4 h-4 rounded">
-                        <span>Presenta síntomas de alarma (cefalea severa, dolor torácico, disnea, acúfenos)</span>
-                    </label>
-                </div>
-            </section>
+<section class="lg:col-span-7 flex flex-col gap-6" aria-live="polite">
+<div id="cardResultado" class="rounded-2xl shadow-md border-l-8 border-emerald-500 bg-emerald-50 p-6">
+<div class="flex flex-wrap justify-between items-start gap-4 mb-4">
+<div>
+<span id="badgeCategoria" class="inline-block text-sm font-bold px-3 py-1 rounded-full bg-emerald-200 text-emerald-900 mb-2">Normotenso</span>
+<h2 id="tituloDecision" class="text-2xl font-extrabold">✅ SÍ SE ATIENDE</h2>
+</div>
+<div class="text-right bg-white px-4 py-2 rounded-xl border">
+<div class="text-xs text-slate-600 font-semibold">Lectura actual</div>
+<div id="lecturaDisplay" class="text-2xl font-black">118/76 <span class="text-xs font-normal">mmHg</span></div>
+<div id="pamDisplay" class="text-xs text-slate-600">PAM: 90 mmHg</div>
+</div>
+</div>
 
-            <!-- Panel de Resultados / Conducta Clínica -->
-            <section class="lg:col-span-7 flex flex-col gap-6">
-                
-                <!-- Tarjeta Principal de Decisión -->
-                <div id="cardResultado" class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-500 p-6 transition-all">
-                    <div class="flex flex-wrap justify-between items-start gap-4 mb-4">
-                        <div>
-                            <span id="badgeCategoria" class="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 mb-2">
-                                Normotenso
-                            </span>
-                            <h2 id="tituloDecision" class="text-2xl font-extrabold text-slate-900">
-                                ✅ SÍ SE ATIENDE
-                            </h2>
-                        </div>
-                        <div class="text-right bg-slate-50 px-4 py-2 rounded-xl border">
-                            <div class="text-xs text-slate-400 uppercase font-semibold">Lectura Actual</div>
-                            <div id="lecturaDisplay" class="text-2xl font-black text-slate-800">118/76 <span class="text-xs font-normal">mmHg</span></div>
-                            <div id="pamDisplay" class="text-[11px] text-slate-500">PAM: 90 mmHg</div>
-                        </div>
-                    </div>
+<div id="alertaPediatrica" class="hidden mb-4 p-4 rounded-xl bg-purple-100 border border-purple-300 text-purple-950 text-sm">
+<div class="font-bold flex items-center gap-2 mb-1 text-purple-900"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Criterio pediátrico activado (menor de 18 años)</div>
+<p id="textoPediatrico" class="leading-relaxed"></p>
+</div>
 
-                    <!-- Alerta Pediátrica Especial -->
-                    <div id="alertaPediatrica" class="hidden mb-4 p-4 rounded-xl bg-purple-50 border border-purple-300 text-purple-950 text-sm">
-                        <div class="font-bold flex items-center gap-2 mb-1 text-purple-800">
-                            <i class="fa-solid fa-triangle-exclamation"></i> ¡Criterio Pediátrico Activado! (Menor de 18 años)
-                        </div>
-                        <p id="textoPediatrico" class="text-xs leading-relaxed"></p>
-                    </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+<div class="bg-white p-4 rounded-xl border border-slate-200">
+<h3 class="font-bold text-sm mb-2 flex items-center gap-2"><i class="fa-solid fa-clipboard-check text-blue-600" aria-hidden="true"></i> Conducta en clínica</h3>
+<ul id="listaConducta" class="text-sm space-y-2 text-slate-800 list-disc pl-4"></ul>
+</div>
+<div class="bg-white p-4 rounded-xl border border-slate-200">
+<h3 class="font-bold text-sm mb-2 flex items-center gap-2"><i class="fa-solid fa-syringe text-teal-600" aria-hidden="true"></i> Protocolo anestésico y fármacos</h3>
+<div id="infoAnestesia" class="text-sm space-y-2 text-slate-800"></div>
+</div>
+</div>
 
-                    <!-- Protocolo paso a paso -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <h3 class="font-bold text-sm text-slate-700 mb-2 flex items-center gap-2">
-                                <i class="fa-solid fa-clipboard-check text-blue-600"></i> Conducta en Clínica
-                            </h3>
-                            <ul id="listaConducta" class="text-xs space-y-2 text-slate-700 list-disc pl-4"></ul>
-                        </div>
+<details class="mt-4 pt-4 border-t border-slate-300" open>
+<summary class="text-sm font-bold text-slate-700">Justificación fisiológica / académica</summary>
+<p id="justificacionTexto" class="text-sm text-slate-800 leading-relaxed mt-2"></p>
+</details>
 
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <h3 class="font-bold text-sm text-slate-700 mb-2 flex items-center gap-2">
-                                <i class="fa-solid fa-syringe text-teal-600"></i> Protocolo Anestésico y Fármacos
-                            </h3>
-                            <div id="infoAnestesia" class="text-xs space-y-2 text-slate-700"></div>
-                        </div>
-                    </div>
+<button onclick="window.print()" class="no-print mt-4 bg-slate-800 hover:bg-slate-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition"><i class="fa-solid fa-print" aria-hidden="true"></i> Imprimir o guardar PDF</button>
+</div>
 
-                    <!-- Justificación Fisiológica -->
-                    <div class="mt-4 pt-4 border-t border-slate-100">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Justificación Fisiológica / Académica</h4>
-                        <p id="justificacionTexto" class="text-xs text-slate-600 leading-relaxed"></p>
-                    </div>
-                </div>
+<div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+<h3 class="text-base font-bold mb-1 flex items-center gap-2"><i class="fa-solid fa-diagram-project text-blue-600" aria-hidden="true"></i> 2. Algoritmo visual de clasificación</h3>
+<p class="text-sm text-slate-700 mb-4">La casilla iluminada muestra en qué nodo del algoritmo se encuentra el paciente actual:</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+<div id="nodo-normal" class="flow-card p-3 rounded-xl border border-emerald-400 bg-emerald-50"><div class="font-bold text-sm text-emerald-900">1. Normal / óptima</div><div class="text-xs font-semibold text-emerald-800">&lt; 120 / &lt; 80 mmHg</div><div class="text-xs text-slate-700 mt-1">Atención odontológica convencional sin restricciones.</div></div>
+<div id="nodo-elevada" class="flow-card p-3 rounded-xl border border-teal-400 bg-teal-50"><div class="font-bold text-sm text-teal-900">2. Elevada / pre-HTA</div><div class="text-xs font-semibold text-teal-800">120-139 / 80-89 mmHg</div><div class="text-xs text-slate-700 mt-1">Sí se atiende. Control de estrés y monitoreo.</div></div>
+<div id="nodo-estadio1" class="flow-card p-3 rounded-xl border border-amber-400 bg-amber-50"><div class="font-bold text-sm text-amber-900">3. HTA estadio 1</div><div class="text-xs font-semibold text-amber-800">140-159 / 90-99 mmHg</div><div class="text-xs text-slate-700 mt-1">Reposo 5 min. Sí se atiende con máx. 2 cartuchos c/epi 1:100,000.</div></div>
+<div id="nodo-estadio2" class="flow-card p-3 rounded-xl border border-orange-400 bg-orange-50"><div class="font-bold text-sm text-orange-900">4. HTA estadio 2</div><div class="text-xs font-semibold text-orange-800">160-179 / 100-109 mmHg</div><div class="text-xs text-slate-700 mt-1">Diferir electivos. Urgencias: solo alivio del dolor sin epinefrina.</div></div>
+<div id="nodo-crisis" class="flow-card p-3 rounded-xl border border-rose-500 bg-rose-50"><div class="font-bold text-sm text-rose-900">5. Crisis hipertensiva</div><div class="text-xs font-semibold text-rose-800">&ge; 180 / &ge; 110 mmHg</div><div class="text-xs text-slate-700 mt-1">NO ATENDER. Suspender todo y referir a urgencias médicas.</div></div>
+<div id="nodo-pediatrico" class="flow-card p-3 rounded-xl border border-purple-400 bg-purple-50"><div class="font-bold text-sm text-purple-900">6. Regla pediátrica (&lt;18 a)</div><div class="text-xs font-semibold text-purple-800">Percentiles edad / talla</div><div class="text-xs text-slate-700 mt-1">Diferir electivos e interconsulta pediátrica si supera los umbrales para su edad.</div></div>
+</div>
+</div>
 
-                <!-- Diagrama de Flujo Dinámico -->
-                <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-                    <h3 class="text-base font-bold text-slate-800 mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-diagram-project text-blue-600"></i> 2. Algoritmo Visual de Clasificación (Flujo Activo)
-                    </h3>
-                    <p class="text-xs text-slate-500 mb-4">La casilla iluminada muestra exactamente en qué nodo del algoritmo se encuentra el paciente actual:</p>
+<div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200 text-sm text-slate-800">
+<h3 class="text-base font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-book-medical text-blue-600" aria-hidden="true"></i> Referencias</h3>
+<ul class="list-disc pl-5 space-y-1">
+<li>ACC/AHA: guía de hipertensión arterial en adultos.</li>
+<li>AAP: guía de hipertensión en niños y adolescentes (percentiles por edad, sexo y talla).</li>
+<li>ESC/ESH: guías europeas de hipertensión arterial.</li>
+</ul>
+<p class="text-xs text-slate-600 mt-3">Última actualización: 26/10/2026. Los umbrales pediátricos de esta herramienta son aproximados: confirma siempre con las tablas de percentiles.</p>
+</div>
+</section>
+</main>
+</div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        <div id="nodo-normal" class="flow-card p-3 rounded-xl border border-emerald-300 bg-emerald-50">
-                            <div class="font-bold text-xs text-emerald-900">1. Normal / Óptima</div>
-                            <div class="text-[11px] font-semibold text-emerald-700">&lt; 120 / &lt; 80 mmHg</div>
-                            <div class="text-[11px] text-slate-600 mt-1">Atención odontológica convencional sin restricciones.</div>
-                        </div>
+<div id="barraMovil" class="lg:hidden fixed bottom-0 inset-x-0 bg-slate-900 text-white text-sm px-4 py-2 flex justify-between items-center z-10 no-print">
+<span id="barraLectura" class="font-bold whitespace-nowrap">118/76 mmHg</span>
+<span id="barraTitulo" class="truncate ml-3"></span>
+</div>
 
-                        <div id="nodo-elevada" class="flow-card p-3 rounded-xl border border-teal-300 bg-teal-50">
-                            <div class="font-bold text-xs text-teal-900">2. Elevada / Pre-HTA</div>
-                            <div class="text-[11px] font-semibold text-teal-700">120-139 / 80-89 mmHg</div>
-                            <div class="text-[11px] text-slate-600 mt-1">Sí se atiende. Control de estrés y monitoreo.</div>
-                        </div>
+<footer class="bg-slate-900 text-slate-300 py-4 pb-14 lg:pb-4 text-center text-xs border-t border-slate-800">
+<div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+<span>Simulador clínico odontológico • Manejo en hipertensión arterial • Uso educativo</span>
+<span class="font-bold text-blue-300 tracking-wide">✨ Creado por chiluca</span>
+</div>
+</footer>
 
-                        <div id="nodo-estadio1" class="flow-card p-3 rounded-xl border border-amber-400 bg-amber-50">
-                            <div class="font-bold text-xs text-amber-900">3. HTA Estadio 1</div>
-                            <div class="text-[11px] font-semibold text-amber-700">140-159 / 90-99 mmHg</div>
-                            <div class="text-[11px] text-slate-600 mt-1">Reposo 5 min. Sí se atiende con máx. 2 cartuchos c/epi 1:100,000.</div>
-                        </div>
+<script>
+const $ = id => document.getElementById(id);
+const COL = {
+emerald:['border-emerald-500 bg-emerald-50','bg-emerald-200 text-emerald-900'],
+teal:['border-teal-500 bg-teal-50','bg-teal-200 text-teal-900'],
+amber:['border-amber-500 bg-amber-50','bg-amber-200 text-amber-900'],
+orange:['border-orange-500 bg-orange-50','bg-orange-200 text-orange-900'],
+rose:['border-rose-600 bg-rose-50','bg-rose-200 text-rose-900'],
+purple:['border-purple-600 bg-purple-50','bg-purple-200 text-purple-900']
+};
+const NODOS = ['nodo-normal','nodo-elevada','nodo-estadio1','nodo-estadio2','nodo-crisis','nodo-pediatrico'];
 
-                        <div id="nodo-estadio2" class="flow-card p-3 rounded-xl border border-orange-400 bg-orange-50">
-                            <div class="font-bold text-xs text-orange-900">4. HTA Estadio 2</div>
-                            <div class="text-[11px] font-semibold text-orange-700">160-179 / 100-109 mmHg</div>
-                            <div class="text-[11px] text-slate-600 mt-1">Diferir electivos. Urgencias: solo alivio del dolor sin epinefrina.</div>
-                        </div>
+function syncInputs(t){
+if(t==='sis') $('sisNum').value=$('sistolica').value; else $('diasNum').value=$('diastolica').value;
+evaluarAlgoritmo();
+}
+function syncSliders(t){
+const n = t==='sis' ? $('sisNum') : $('diasNum');
+const s = t==='sis' ? $('sistolica') : $('diastolica');
+s.value = n.value; n.value = s.value;
+evaluarAlgoritmo();
+}
+function resaltarNodo(id){
+NODOS.forEach(n=>{
+const el=$(n);
+el.classList.toggle('flow-active', n===id);
+el.classList.toggle('flow-inactive', n!==id);
+});
+}
+function mostrar(c,nodo,badge,titulo,lista,anest,just){
+resaltarNodo(nodo);
+$('cardResultado').className = 'rounded-2xl shadow-md border-l-8 p-6 '+COL[c][0];
+const b=$('badgeCategoria');
+b.className = 'inline-block text-sm font-bold px-3 py-1 rounded-full mb-2 '+COL[c][1];
+b.textContent = badge;
+$('tituloDecision').textContent = titulo;
+$('barraTitulo').textContent = titulo;
+$('listaConducta').innerHTML = lista.map(x=>`<li>${x}</li>`).join('');
+$('infoAnestesia').innerHTML = anest;
+$('justificacionTexto').textContent = just;
+}
 
-                        <div id="nodo-crisis" class="flow-card p-3 rounded-xl border border-rose-500 bg-rose-50">
-                            <div class="font-bold text-xs text-rose-900">5. Crisis Hipertensiva</div>
-                            <div class="text-[11px] font-semibold text-rose-700">&ge; 180 / &ge; 110 mmHg</div>
-                            <div class="text-[11px] text-slate-600 mt-1">NO ATENDER. Suspender todo y referir a urgencias médicas.</div>
-                        </div>
+function evaluarAlgoritmo(){
+const edad=+$('edad').value, sis=+$('sistolica').value, dias=+$('diastolica').value;
+const urg=document.querySelector('input[name="urgencia"]:checked').value==='urgencia';
+const dx=$('diagPrevio').checked, sint=$('sintomasCrisis').checked;
+const lec=`${sis}/${dias}`;
+$('edadVal').textContent = `${edad} años (${edad<18?'Pediátrico':'Adulto'})`;
+$('lecturaDisplay').innerHTML = `${lec} <span class="text-xs font-normal">mmHg</span>`;
+$('barraLectura').textContent = `${lec} mmHg`;
+$('pamDisplay').textContent = `Presión arterial media (PAM): ${Math.round((2*dias+sis)/3)} mmHg`;
+const alerta=$('alertaPediatrica'), tp=$('textoPediatrico');
+alerta.classList.add('hidden');
 
-                        <div id="nodo-pediatrico" class="flow-card p-3 rounded-xl border border-purple-400 bg-purple-50">
-                            <div class="font-bold text-xs text-purple-900">6. Regla Pediátrica (&lt;18a)</div>
-                            <div class="text-[11px] font-semibold text-purple-700">Percentiles Edad/Talla</div>
-                            <div class="text-[11px] text-slate-600 mt-1">8-12 años &ge;120/80 es HTA. Diferir electivos e interconsulta pediátrica.</div>
-                        </div>
-                    </div>
-                </div>
+if(edad<18){
+const chico=edad<=10;
+const e2s=chico?122:135, e2d=chico?82:88, e1s=chico?112:122, e1d=chico?74:78;
+if(sis>=e2s || dias>=e2d || sint){
+alerta.classList.remove('hidden');
+tp.innerHTML = `En un paciente pediátrico de <strong>${edad} años</strong>, una cifra de <strong>${lec} mmHg</strong> NO se evalúa con tabla de adultos. Supera el <strong>percentil 95 + 12 mmHg (hipertensión pediátrica estadio 2)</strong>. Requiere búsqueda de causas secundarias (renales, coartación aórtica, endocrinas) o evaluación de respuesta adrenérgica por dolor/infección. <em>Umbrales aproximados: confirma con las tablas de percentiles por edad, sexo y talla.</em>`;
+const anest = `<p><strong>Conducta farmacológica:</strong> Evitar vasoconstrictores adrenérgicos hasta contar con el alta pediátrica.</p><p>Si es indispensable anestesiar por urgencia aguda: usar <strong>mepivacaína simple al 3%</strong> (calculando dosis ponderal estricta en mg/kg).</p>`;
+const just = `En niños, la presión arterial normal es mucho menor que en adultos debido al menor calibre y mayor distensibilidad vascular. Una lectura como ${lec} mmHg a los ${edad} años representa una sobrecarga hemodinámica importante que obliga a descartar patología renal o sistémica subyacente, además de controlar focos infecciosos que perpetúan el estrés fisiológico.`;
+if(urg){
+mostrar('purple','nodo-pediatrico','Hipertensión pediátrica estadio 2 (> percentil 95)','⚠️ DIFERIR TRATAMIENTO MASIVO / SOLO CONTROL DE INFECCIÓN AGUDA',[
+'<strong>No iniciar rehabilitaciones ni extracciones múltiples en esta sesión.</strong>',
+'Dejar reposar al niño 10 min en ambiente tranquilo para descartar ansiedad extrema ("bata blanca").',
+'Si hay dolor agudo o foco infeccioso severo activo, realizar <strong>únicamente</strong> procedimiento paliativo de urgencia (ej. apertura/drenaje o medicación).',
+`<strong>Interconsulta urgente al pediatra:</strong> entregar hoja de referencia con la lectura exacta (${lec} mmHg) para estudio sistémico antes de continuar el plan dental.`
+],anest,just);
+}else{
+mostrar('purple','nodo-pediatrico','Hipertensión pediátrica estadio 2 (> percentil 95)','❌ NO ATENDER TRATAMIENTO ELECTIVO • REFERIR AL PEDIATRA',[
+'<strong>Suspender el procedimiento odontológico electivo hoy.</strong>',
+'Repetir toma tras 5-10 min de reposo con brazalete pediátrico adecuado (debe cubrir 80-100% de la circunferencia del brazo).',
+'Enviar interconsulta prioritaria al <strong>pediatra o cardiólogo pediatra</strong>.'
+],anest,just);
+}
+return;
+}else if(sis>=e1s || dias>=e1d){
+alerta.classList.remove('hidden');
+tp.innerHTML = `Cifra por encima del percentil 90-95 para ${edad} años. Sugiere PA elevada o HTA pediátrica inicial. Verificar tamaño del brazalete y ansiedad del niño. <em>Umbrales aproximados: confirma con las tablas de percentiles.</em>`;
+}
+}
 
-            </section>
-        </main>
-    </div>
+if(sis>=180 || dias>=110 || sint){
+mostrar('rose','nodo-crisis', sint?'Emergencia hipertensiva (con síntomas)':'Crisis hipertensiva (≥180/110 mmHg)','🚨 NO ATENDER • REFERENCIA MÉDICA INMEDIATA',[
+'<strong>Suspender absolutamente cualquier procedimiento dental</strong> (incluso si es urgencia).',
+'Colocar al paciente en posición semisentada (Fowler), mantener la calma y aflojar prendas ajustadas.',
+'<strong>NO administrar antihipertensivos sublinguales</strong> en el consultorio dental (riesgo de isquemia cerebral por caída brusca de PA).',
+'Derivación inmediata a un servicio de <strong>urgencias médicas hospitalarias</strong>.'
+],`<p class="text-rose-800 font-bold">❌ Contraindicación absoluta de anestésicos locales con o sin vasoconstrictor en el sillón dental.</p><p>El manejo del dolor dental deberá realizarse en ámbito hospitalario una vez estabilizada la presión arterial.</p>`,
+'Con cifras ≥180/110 mmHg el riesgo de evento vascular cerebral (EVC), infarto agudo al miocardio o sangrado incoercible durante el acto odontológico es crítico.');
+}else if(sis>=160 || dias>=100){
+const just='En el estadio 2 existe descontrol hemodinámico importante. Los procedimientos electivos se posponen, pero ante urgencias con dolor severo se realiza alivio conservador sin adrenalina para frenar la descarga simpática.';
+if(urg){
+mostrar('orange','nodo-estadio2','Hipertensión arterial estadio 2 (160-179 / 100-109)','⚠️ SOLO TRATAMIENTO PALIATIVO DE URGENCIA • DIFERIR EL RESTO',[
+'<strong>No realizar cirugías, extracciones complejas ni tratamientos largos.</strong>',
+'Atender exclusivamente la urgencia aguda (ej. pulpectomía/pulpotomía de urgencia o drenaje) para quitar el dolor que está elevando la PA.',
+'Citas cortas, control estricto de ansiedad y monitoreo de PA cada 10-15 minutos.',
+'Enviar con nota de interconsulta médica urgente al terminar la sesión paliativa.'
+],`<p><strong>Anestésico de elección:</strong> <span class="text-orange-900 font-bold">mepivacaína al 3% SIN vasoconstrictor</span> o prilocaína con felipresina.</p><p>Evitar epinefrina en estadio 2. Prescribir analgésicos evitando AINEs por periodos prolongados (interacción con antihipertensivos).</p>`,just);
+}else{
+mostrar('orange','nodo-estadio2','Hipertensión arterial estadio 2 (160-179 / 100-109)','❌ NO ATENDER TRATAMIENTO ELECTIVO • INTERCONSULTA MÉDICA',[
+'Dejar reposar 5-10 minutos y volver a medir la PA.',
+'Si persiste en rango de estadio 2 (≥160/100), <strong>diferir el tratamiento dental electivo</strong>.',
+'Remitir al paciente con su médico tratante para ajuste farmacológico antes de reprogramar su cita.'
+],`<p>No se administra anestesia hoy por tratarse de un procedimiento electivo diferido.</p>`,just);
+}
+}else if(sis>=140 || dias>=90){
+const anest=`<p><strong>Anestésico recomendado:</strong> lidocaína al 2% con epinefrina 1:100,000.</p><p><strong>Dosis máxima permitida:</strong> <span class="bg-amber-200 text-amber-950 font-bold px-1.5 py-0.5 rounded">Máximo 2 cartuchos (0.036 mg de epinefrina)</span>.</p><p><strong>Técnica obligatoria:</strong> aspiración previa e inyección lenta (1 min por cartucho) para lograr anestesia profunda que bloquee el dolor.</p>`;
+const just='En HTA estadio 1 ante dolor severo (como una pulpitis irreversible), el beneficio de usar un anestésico con epinefrina 1:100,000 (máx. 2 cartuchos) supera el riesgo: la adrenalina endógena que produce el cuerpo por sentir dolor en el sillón dental es muchísimo mayor que los 0.018 mg contenidos en un cartucho dental.';
+if(urg){
+mostrar('amber','nodo-estadio1','Hipertensión arterial estadio 1 (140-159 / 90-99)','✅ SÍ SE ATIENDE LA URGENCIA CON PRECAUCIÓN',[
+`<strong>Prioridad clínica: quitar el dolor agudo.</strong> El dolor severo y el insomnio liberan catecolaminas endógenas que explican la elevación a ${lec} mmHg.`,
+'Proceder con el tratamiento de urgencia (ej. acceso cameral / extirpación pulpar en el diente afectado).',
+'Monitorear la PA antes de iniciar, tras anestesiar y al finalizar la consulta.',
+dx?`Paciente ya diagnosticado: enviar nota a su médico informando la lectura de ${lec} mmHg para revisión de su esquema.`:'Referir a valoración médica para protocolo diagnóstico de HTA.'
+],anest,just);
+}else{
+mostrar('amber','nodo-estadio1','Hipertensión arterial estadio 1 (140-159 / 90-99)','⚠️ SÍ SE ATIENDE CON PRECAUCIÓN Y LÍMITE DE VASOCONSTRICTOR',[
+'Dejar reposar 5 minutos y repetir toma.',
+'Se puede realizar el tratamiento dental planeando citas cortas (preferentemente matutinas) y sin estrés.',
+'Evitar cambios bruscos de posición en el sillón dental (prevenir hipotensión ortostática si toma fármacos).',
+'Recomendar seguimiento médico de sus cifras tensionales.'
+],anest,just);
+}
+}else if(sis>=120 || dias>=80){
+mostrar('teal','nodo-elevada','Presión arterial elevada / prehipertensión (120-139 / 80-89)','✅ SÍ SE ATIENDE (CON MONITOREO Y REDUCCIÓN DE ESTRÉS)',[
+'<strong>Atención odontológica permitida</strong> tanto para tratamientos electivos como urgencias.',
+'Aplicar protocolo de reducción de estrés y ansiedad en consulta.',
+'Informar al paciente sobre sus cifras para que lleve un registro preventivo y modifique su estilo de vida.'
+],`<p><strong>Anestésico:</strong> uso seguro de anestésicos locales con vasoconstrictor (epinefrina 1:100,000).</p><p>Dosis habitual (se sugiere no exceder 3 a 4 cartuchos por sesión y realizar siempre aspiración previa).</p>`,
+'Cifras entre 120-139 / 80-89 mmHg en adultos no contraindican ningún procedimiento dental, pero identifican a pacientes con riesgo de desarrollar HTA establecida o reactividad al estrés odontológico.');
+}else{
+mostrar('emerald','nodo-normal','Presión arterial normal (<120 / <80 mmHg)','✅ SÍ SE ATIENDE SIN RESTRICCIONES',[
+'<strong>Paciente normotenso.</strong> Realizar el tratamiento odontológico planeado de forma convencional.',
+'Registrar la cifra en la historia clínica como valor basal del paciente.'
+],`<p><strong>Anestésico:</strong> sin contraindicación hemodinámica para el uso de vasoconstrictores (hasta dosis máxima ponderal estándar).</p>`,
+'El paciente se encuentra dentro de parámetros cardiovasculares óptimos para recibir atención odontológica rutinaria o quirúrgica.');
+}
+}
 
-    <!-- Footer con crédito -->
-    <footer class="bg-slate-900 text-slate-400 py-4 text-center text-xs border-t border-slate-800">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span>Simulador Clínico Odontológico • Protocolo de Manejo en Hipertensión Arterial</span>
-            <span class="font-bold text-blue-300 tracking-wide">✨ Creado por chiluca</span>
-        </div>
-    </footer>
+function cargar(e,s,d,urg,dx,nota){
+$('edad').value=e;
+$('sistolica').value=s; $('sisNum').value=s;
+$('diastolica').value=d; $('diasNum').value=d;
+document.querySelector(`input[name="urgencia"][value="${urg?'urgencia':'electivo'}"]`).checked=true;
+$('diagPrevio').checked=dx;
+$('sintomasCrisis').checked=false;
+const n=$('notaCaso');
+n.innerHTML=nota;
+n.classList.toggle('hidden', !nota);
+evaluarAlgoritmo();
+}
+function cargarCaso1(){
+cargar(50,150,85,true,true,'<strong>📌 Caso clínico 1 cargado:</strong> mujer de 50 años, hipertensa diagnosticada. Acude por dolor severo en OD 36 que no la dejó dormir toda la noche. TA: <strong>150/85 mmHg</strong>.');
+}
+function cargarCaso2(){
+cargar(8,129,86,true,false,'<strong>📌 Caso clínico 2 cargado:</strong> niño de 8 años llevado para eliminar focos infecciosos. Múltiples coronas destruidas por caries con respuesta pulpar positiva. TA: <strong>129/86 mmHg</strong>.');
+}
+function resetear(){ cargar(35,118,76,false,false,''); }
 
-    <script>
-        function syncInputs(tipo) {
-            if (tipo === 'sis') {
-                document.getElementById('sisNum').value = document.getElementById('sistolica').value;
-            } else {
-                document.getElementById('diasNum').value = document.getElementById('diastolica').value;
-            }
-            evaluarAlgoritmo();
-        }
-
-        function syncSliders(tipo) {
-            if (tipo === 'sis') {
-                document.getElementById('sistolica').value = document.getElementById('sisNum').value;
-            } else {
-                document.getElementById('diastolica').value = document.getElementById('diasNum').value;
-            }
-            evaluarAlgoritmo();
-        }
-
-        function resaltarNodo(idActivo) {
-            const nodos = ['nodo-normal', 'nodo-elevada', 'nodo-estadio1', 'nodo-estadio2', 'nodo-crisis', 'nodo-pediatrico'];
-            nodos.forEach(id => {
-                const el = document.getElementById(id);
-                if (id === idActivo) {
-                    el.classList.add('flow-active');
-                    el.classList.remove('flow-inactive');
-                } else {
-                    el.classList.remove('flow-active');
-                    el.classList.add('flow-inactive');
-                }
-            });
-        }
-
-        function evaluarAlgoritmo() {
-            const edad = parseInt(document.getElementById('edad').value);
-            const sis = parseInt(document.getElementById('sistolica').value);
-            const dias = parseInt(document.getElementById('diastolica').value);
-            const esUrgencia = document.querySelector('input[name="urgencia"]:checked').value === 'urgencia';
-            const diagPrevio = document.getElementById('diagPrevio').checked;
-            const sintomasCrisis = document.getElementById('sintomasCrisis').checked;
-
-            document.getElementById('edadVal').textContent = edad < 18 ? `${edad} años (Pediátrico)` : `${edad} años (Adulto)`;
-            document.getElementById('lecturaDisplay').innerHTML = `${sis}/${dias} <span class="text-xs font-normal">mmHg</span>`;
-            const pam = Math.round((2 * dias + sis) / 3);
-            document.getElementById('pamDisplay').textContent = `Presión Arterial Media (PAM): ${pam} mmHg`;
-
-            const alertaPed = document.getElementById('alertaPediatrica');
-            const textoPed = document.getElementById('textoPediatrico');
-            const card = document.getElementById('cardResultado');
-            const badge = document.getElementById('badgeCategoria');
-            const titulo = document.getElementById('tituloDecision');
-            const listaConducta = document.getElementById('listaConducta');
-            const infoAnestesia = document.getElementById('infoAnestesia');
-            const justificacion = document.getElementById('justificacionTexto');
-
-            if (edad < 18) {
-                const umbralSisE2 = edad <= 10 ? 122 : 135;
-                const umbralDiasE2 = edad <= 10 ? 82 : 88;
-                const umbralSisE1 = edad <= 10 ? 112 : 122;
-                const umbralDiasE1 = edad <= 10 ? 74 : 78;
-
-                if (sis >= umbralSisE2 || dias >= umbralDiasE2 || sintomasCrisis) {
-                    alertaPed.classList.remove('hidden');
-                    textoPed.innerHTML = `En un paciente pediátrico de <strong>${edad} años</strong>, una cifra de <strong>${sis}/${dias} mmHg</strong> NO se evalúa con tabla de adultos. Supera el <strong>Percentil 95 + 12 mmHg (Hipertensión Pediátrica Estadio 2)</strong>. Requiere búsqueda de causas secundarias (renales, coartación aórtica, endocrinas) o evaluación de respuesta adrenérgica por dolor/infección.`;
-                    resaltarNodo('nodo-pediatrico');
-
-                    card.className = "bg-white rounded-2xl shadow-md border-l-8 border-purple-600 p-6 transition-all";
-                    badge.className = "inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-purple-100 text-purple-900 mb-2";
-                    badge.textContent = "Hipertensión Pediátrica Estadio 2 (> Percentil 95)";
-
-                    if (esUrgencia) {
-                        titulo.innerHTML = "⚠️ DIFERIR TRATAMIENTO MASIVO / SOLO CONTROL DE INFECCIÓN AGUDA";
-                        listaConducta.innerHTML = `
-                            <li><strong>No iniciar rehabilitaciones ni extracciones múltiples en esta sesión.</strong></li>
-                            <li>Dejar reposar al niño 10 min en ambiente tranquilo para descartar ansiedad extrema ("bata blanca").</li>
-                            <li>Si hay dolor agudo o foco infeccioso severo activo, realizar <strong>únicamente</strong> procedimiento paliativo de urgencia (ej. apertura/drenaje o medicación).</li>
-                            <li><strong>Interconsulta urgente al Pediatra:</strong> Entregar hoja de referencia con la lectura exacta (${sis}/${dias} mmHg) para estudio sistémico antes de continuar el plan dental.</li>
-                        `;
-                    } else {
-                        titulo.innerHTML = "❌ NO ATENDER TRATAMIENTO ELECTIVO • REFERIR AL PEDIATRA";
-                        listaConducta.innerHTML = `
-                            <li><strong>Suspender el procedimiento odontológico electivo hoy.</strong></li>
-                            <li>Repetir toma tras 5-10 min de reposo con brazalete pediátrico adecuado (debe cubrir 80-100% de la circunferencia del brazo).</li>
-                            <li>Enviar interconsulta prioritaria al <strong>Pediatra o Cardiólogo Pediatra</strong>.</li>
-                        `;
-                    }
-                    infoAnestesia.innerHTML = `
-                        <p><strong>Conducta farmacológica:</strong> Evitar vasoconstrictores adrenérgicos hasta contar con el alta pediátrica.</p>
-                        <p>Si es indispensable anestesiar por urgencia aguda: usar <strong>Mepivacaína simple al 3%</strong> (calculando dosis ponderal estricta en mg/kg).</p>
-                    `;
-                    justificacion.textContent = "En niños, la presión arterial normal es mucho menor que en adultos debido al menor calibre y mayor distensibilidad vascular. Una lectura como 129/86 mmHg a los 8 años representa una sobrecarga hemodinámica importante que obliga a descartar patología renal o sistémica subyacente, además de controlar focos infecciosos que perpetúan el estrés fisiológico.";
-                    return;
-                } else if (sis >= umbralSisE1 || dias >= umbralDiasE1) {
-                    alertaPed.classList.remove('hidden');
-                    textoPed.innerHTML = `Cifra por encima del Percentil 90-95 para ${edad} años. Sugiere PA elevada o HTA pediátrica inicial. Verificar tamaño del brazalete y ansiedad del niño.`;
-                    resaltarNodo('nodo-pediatrico');
-                } else {
-                    alertaPed.classList.add('hidden');
-                }
-            } else {
-                alertaPed.classList.add('hidden');
-            }
-
-            if (sis >= 180 || dias >= 110 || sintomasCrisis) {
-                resaltarNodo('nodo-crisis');
-                card.className = "bg-white rounded-2xl shadow-md border-l-8 border-rose-600 p-6 transition-all";
-                badge.className = "inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-rose-100 text-rose-900 mb-2";
-                badge.textContent = sintomasCrisis ? "Emergencia Hipertensiva (Con Síntomas)" : "Crisis Hipertensiva (≥180/110 mmHg)";
-                titulo.innerHTML = "🚨 NO ATENDER • REFERENCIA MÉDICA INMEDIATA";
-                listaConducta.innerHTML = `
-                    <li><strong>Suspender absolutamente cualquier procedimiento dental</strong> (incluso si es urgencia).</li>
-                    <li>Colocar al paciente en posición semisentada (Fowler), mantener la calma y aflojar prendas ajustadas.</li>
-                    <li><strong>NO administrar antihipertensivos sublinguales</strong> en el consultorio dental (riesgo de isquemia cerebral por caída brusca de PA).</li>
-                    <li>Derivación inmediata a un servicio de <strong>Urgencias Médicas Hospitalarias</strong>.</li>
-                `;
-                infoAnestesia.innerHTML = `
-                    <p class="text-rose-700 font-bold">❌ Contraindicación absoluta de anestésicos locales con o sin vasoconstrictor en el sillón dental.</p>
-                    <p>El manejo del dolor dental deberá realizarse en ámbito hospitalario una vez estabilizada la presión arterial.</p>
-                `;
-                justificacion.textContent = "Con cifras ≥180/110 mmHg el riesgo de evento vascular cerebral (EVC), infarto agudo al miocardio o sangrado incoercible durante el acto odontológico es crítico.";
-
-            } else if (sis >= 160 || dias >= 100) {
-                resaltarNodo('nodo-estadio2');
-                card.className = "bg-white rounded-2xl shadow-md border-l-8 border-orange-500 p-6 transition-all";
-                badge.className = "inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-orange-100 text-orange-900 mb-2";
-                badge.textContent = "Hipertensión Arterial Estadio 2 (160-179 / 100-109)";
-                
-                if (esUrgencia) {
-                    titulo.innerHTML = "⚠️ SOLO TRATAMIENTO PALIATIVO DE URGENCIA • DIFERIR EL RESTO";
-                    listaConducta.innerHTML = `
-                        <li><strong>No realizar cirugías, extracciones complejas ni tratamientos largos.</strong></li>
-                        <li>Atender exclusivamente la urgencia aguda (ej. pulpectomía/pulpotomía de urgencia o drenaje) para quitar el dolor que está elevando la PA.</li>
-                        <li>Citas cortas, control estricto de ansiedad y monitoreo de PA cada 10-15 minutos.</li>
-                        <li>Enviar con nota de interconsulta médica urgente al terminar la sesión paliativa.</li>
-                    `;
-                    infoAnestesia.innerHTML = `
-                        <p><strong>Anestésico de elección:</strong> <span class="text-orange-800 font-bold">Mepivacaína al 3% SIN vasoconstrictor</span> o Prilocaína con Felipresina.</p>
-                        <p>Evitar epinefrina en Estadio 2. Prescribir analgésicos evitando AINEs por periodos prolongados (interacción con antihipertensivos).</p>
-                    `;
-                } else {
-                    titulo.innerHTML = "❌ NO ATENDER TRATAMIENTO ELECTIVO • INTERCONSULTA MÉDICA";
-                    listaConducta.innerHTML = `
-                        <li>Dejar reposar 5-10 minutos y volver a medir la PA.</li>
-                        <li>Si persiste en rango de Estadio 2 (≥160/100), <strong>diferir el tratamiento dental electivo</strong>.</li>
-                        <li>Remitir al paciente con su médico tratante para ajuste farmacológico antes de reprogramar su cita.</li>
-                    `;
-                    infoAnestesia.innerHTML = `
-                        <p>No se administra anestesia hoy por tratarse de un procedimiento electivo diferido.</p>
-                    `;
-                }
-                justificacion.textContent = "En el Estadio 2 existe descontrol hemodinámico importante. Los procedimientos electivos se posponen, pero ante urgencias con dolor severo se realiza alivio conservador sin adrenalina para frenar la descarga simpática.";
-
-            } else if (sis >= 140 || dias >= 90) {
-                resaltarNodo('nodo-estadio1');
-                card.className = "bg-white rounded-2xl shadow-md border-l-8 border-amber-500 p-6 transition-all";
-                badge.className = "inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-100 text-amber-900 mb-2";
-                badge.textContent = "Hipertensión Arterial Estadio 1 (140-159 / 90-99)";
-
-                if (esUrgencia) {
-                    titulo.innerHTML = "✅ SÍ SE ATIENDE LA URGENCIA CON PRECAUCIÓN";
-                    listaConducta.innerHTML = `
-                        <li><strong>Prioridad clínica: Quitar el dolor agudo.</strong> El dolor severo y el insomnio liberan catecolaminas endógenas que explican la elevación a ${sis}/${dias} mmHg.</li>
-                        <li>Proceder con el tratamiento de urgencia (ej. acceso cameral / extirpación pulpar en el diente afectado).</li>
-                        <li>Monitorear la PA antes de iniciar, tras anestesiar y al finalizar la consulta.</li>
-                        <li>${diagPrevio ? 'Paciente ya diagnosticado: enviar nota a su médico informando lectura de 150/85 mmHg para revisión de su esquema.' : 'Referir a valoración médica para protocolo diagnóstico de HTA.'}</li>
-                    `;
-                } else {
-                    titulo.innerHTML = "⚠️ SÍ SE ATIENDE CON PRECAUCIÓN Y LÍMITE DE VASOCONSTRICTOR";
-                    listaConducta.innerHTML = `
-                        <li>Dejar reposar 5 minutos y repetir toma.</li>
-                        <li>Se puede realizar el tratamiento dental planeando citas cortas (preferentemente matutinas) y sin estrés.</li>
-                        <li>Evitar cambios bruscos de posición en el sillón dental (prevenir hipotensión ortostática si toma fármacos).</li>
-                        <li>Recomendar seguimiento médico de sus cifras tensionales.</li>
-                    `;
-                }
-                infoAnestesia.innerHTML = `
-                    <p><strong>Anestésico recomendado:</strong> Lidocaína al 2% con Epinefrina 1:100,000.</p>
-                    <p><strong>Dosis máxima permitida:</strong> <span class="bg-amber-200 text-amber-950 font-bold px-1.5 py-0.5 rounded">Máximo 2 cartuchos (0.036 mg de epinefrina)</span>.</p>
-                    <p><strong>Técnica obligatoria:</strong> Aspiración previa positiva/negativa lenta e inyección lenta (1 min por cartucho) para lograr anestesia profunda que bloquee el dolor.</p>
-                `;
-                justificacion.textContent = "En HTA Estadio 1 ante dolor severo (como una pulpitis irreversible), el beneficio de usar un anestésico con epinefrina 1:100,000 (máx. 2 cartuchos) supera el riesgo: la adrenalina endógena que produce el cuerpo por sentir dolor en el sillón dental es muchísimo mayor que los 0.018 mg contenidos en un cartucho dental.";
-
-            } else if (sis >= 120 || dias >= 80) {
-                resaltarNodo('nodo-elevada');
-                card.className = "bg-white rounded-2xl shadow-md border-l-8 border-teal-500 p-6 transition-all";
-                badge.className = "inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-teal-100 text-teal-900 mb-2";
-                badge.textContent = "Presión Arterial Elevada / Prehipertensión (120-139 / 80-89)";
-                titulo.innerHTML = "✅ SÍ SE ATIENDE (CON MONITOREO Y REDUCCIÓN DE ESTRÉS)";
-                listaConducta.innerHTML = `
-                    <li><strong>Atención odontológica permitida</strong> tanto para tratamientos electivos como urgencias.</li>
-                    <li>Aplicar protocolo de reducción de estrés y ansiedad en consulta.</li>
-                    <li>Informar al paciente sobre sus cifras para que lleve un registro preventivo y modifique estilo de vida.</li>
-                `;
-                infoAnestesia.innerHTML = `
-                    <p><strong>Anestésico:</strong> Uso seguro de anestésicos locales con vasoconstrictor (Epinefrina 1:100,000).</p>
-                    <p>Dosis habitual (se sugiere no exceder 3 a 4 cartuchos por sesión y realizar siempre aspiración previa).</p>
-                `;
-                justificacion.textContent = "Cifras entre 120-139 / 80-89 mmHg en adultos no contraindican ningún procedimiento dental, pero identifican a pacientes con riesgo de desarrollar HTA establecida o reactividad al estrés odontológico.";
-
-            } else {
-                resaltarNodo('nodo-normal');
-                card.className = "bg-white rounded-2xl shadow-md border-l-8 border-emerald-500 p-6 transition-all";
-                badge.className = "inline-block text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 mb-2";
-                badge.textContent = "Presión Arterial Normal (<120 / <80 mmHg)";
-                titulo.innerHTML = "✅ SÍ SE ATIENDE SIN RESTRICCIONES";
-                listaConducta.innerHTML = `
-                    <li><strong>Paciente normotenso.</strong> Realizar el tratamiento odontológico planeado de forma convencional.</li>
-                    <li>Registrar la cifra en la historia clínica como valor basal del paciente.</li>
-                `;
-                infoAnestesia.innerHTML = `
-                    <p><strong>Anestésico:</strong> Sin contraindicación hemodinámica para el uso de vasoconstrictores (hasta dosis máxima ponderal estándar).</p>
-                `;
-                justificacion.textContent = "El paciente se encuentra dentro de parámetros cardiovasculares óptimos para recibir atención odontológica rutinaria o quirúrgica.";
-            }
-        }
-
-        function cargarCaso1() {
-            document.getElementById('edad').value = 50;
-            document.getElementById('sistolica').value = 150;
-            document.getElementById('sisNum').value = 150;
-            document.getElementById('diastolica').value = 85;
-            document.getElementById('diasNum').value = 85;
-            document.querySelector('input[name="urgencia"][value="urgencia"]').checked = true;
-            document.getElementById('diagPrevio').checked = true;
-            document.getElementById('sintomasCrisis').checked = false;
-
-            const nota = document.getElementById('notaCaso');
-            nota.classList.remove('hidden');
-            nota.innerHTML = `<strong>📌 Caso Clínico 1 Cargado:</strong> Mujer de 50 años, hipertensa diagnosticada. Acude por dolor severo en OD 36 que no la dejó dormir toda la noche. TA: <strong>150/85 mmHg</strong>.`;
-
-            evaluarAlgoritmo();
-        }
-
-        function cargarCaso2() {
-            document.getElementById('edad').value = 8;
-            document.getElementById('sistolica').value = 129;
-            document.getElementById('sisNum').value = 129;
-            document.getElementById('diastolica').value = 86;
-            document.getElementById('diasNum').value = 86;
-            document.querySelector('input[name="urgencia"][value="urgencia"]').checked = true;
-            document.getElementById('diagPrevio').checked = false;
-            document.getElementById('sintomasCrisis').checked = false;
-
-            const nota = document.getElementById('notaCaso');
-            nota.classList.remove('hidden');
-            nota.innerHTML = `<strong>📌 Caso Clínico 2 Cargado:</strong> Niño de 8 años llevado para eliminar focos infecciosos. Múltiples coronas destruidas por caries con respuesta pulpar positiva. TA: <strong>129/86 mmHg</strong>.`;
-
-            evaluarAlgoritmo();
-        }
-
-        function resetear() {
-            document.getElementById('edad').value = 35;
-            document.getElementById('sistolica').value = 118;
-            document.getElementById('sisNum').value = 118;
-            document.getElementById('diastolica').value = 76;
-            document.getElementById('diasNum').value = 76;
-            document.querySelector('input[name="urgencia"][value="electivo"]').checked = true;
-            document.getElementById('diagPrevio').checked = false;
-            document.getElementById('sintomasCrisis').checked = false;
-            document.getElementById('notaCaso').classList.add('hidden');
-            evaluarAlgoritmo();
-        }
-
-        window.onload = evaluarAlgoritmo;
-    </script>
+window.onload = evaluarAlgoritmo;
+</script>
 </body>
 </html>
